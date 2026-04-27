@@ -1,49 +1,77 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
-    <title>{% if page.title %}{{ page.title }} – {% endif %}{{ site.name }} – {{ site.description }}</title>
+    <title>{% if page.title and page.title != "Home" %}{{ page.title }} – {% endif %}{{ site.name }}</title>
 
     {% include meta.html %}
 
-    <!--[if lt IE 9]>
-      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" type="text/css" href="{{ site.baseurl }}/style.css" />
-    <link rel="alternate" type="application/rss+xml" title="{{ site.name }} - {{ site.description }}" href="{{ site.baseurl }}/feed.xml" />
-
-    <!-- Created with Jekyll Now - http://github.com/barryclark/jekyll-now -->
+    <link rel="alternate" type="application/rss+xml" title="{{ site.name }}" href="{{ site.baseurl }}/feed.xml" />
   </head>
 
   <body>
     <div class="wrapper-masthead">
-      <div class="container">
-        <header class="masthead clearfix">
-          <a href="{{ site.baseurl }}/" class="site-avatar"><img src="{{ site.avatar }}" /></a>
+      <header class="masthead">
+        <div class="site-name">
+          <a href="{{ site.baseurl }}/">{{ site.name }}</a>
+        </div>
 
-          <div class="site-info">
-            <h1 class="site-name"><a href="{{ site.baseurl }}/">{{ site.name }}</a></h1>
-            <p class="site-description">{{ site.description }}</p>
+        <nav aria-label="Primary navigation">
+          <input type="checkbox" id="nav-toggle" class="nav-toggle" aria-hidden="true">
+          <label for="nav-toggle" class="nav-hamburger" aria-label="Toggle navigation menu">
+            <span></span>
+            <span></span>
+            <span></span>
+          </label>
+          <div class="nav-links">
+            <a href="{{ site.baseurl }}/about"{% if page.url == '/about/' %} aria-current="page"{% endif %}>About</a>
+            <a href="{{ site.baseurl }}/hardware"{% if page.url == '/hardware/' %} aria-current="page"{% endif %}>Hardware</a>
+            <a href="{{ site.baseurl }}/software"{% if page.url == '/software/' %} aria-current="page"{% endif %}>Software</a>
+            <a href="{{ site.baseurl }}/publications"{% if page.url == '/publications/' %} aria-current="page"{% endif %}>Publications</a>
           </div>
-
-          <nav>
-            <a href="{{ site.baseurl }}/">Blog</a>
-            <a href="{{ site.baseurl }}/about">About</a>
-          </nav>
-        </header>
-      </div>
+        </nav>
+      </header>
     </div>
 
-    <div id="main" role="main" class="container">
+    <div id="main" role="main">
       {{ content }}
     </div>
 
     <div class="wrapper-footer">
-      <div class="container">
-        <footer class="footer">
-          {% include svg-icons.html %}
-        </footer>
-      </div>
+      <footer>
+        <nav class="footer-nav" aria-label="Footer navigation">
+          <a href="{{ site.baseurl }}/">Home</a>
+          <a href="{{ site.baseurl }}/about">About</a>
+          <a href="{{ site.baseurl }}/hardware">Hardware</a>
+          <a href="{{ site.baseurl }}/software">Software</a>
+          <a href="{{ site.baseurl }}/publications">Publications</a>
+          {% if site.footer-links.rss %}<a href="{{ site.baseurl }}/feed.xml">RSS</a>{% endif %}
+        </nav>
+
+        <div class="footer-icons">
+          {% if site.footer-links.github %}
+          <a href="https://github.com/{{ site.footer-links.github }}" aria-label="GitHub" target="_blank" rel="noopener">
+            <i class="svg-icon github"></i>
+          </a>
+          {% endif %}
+          {% if site.footer-links.email %}
+          <a href="mailto:{{ site.footer-links.email }}" aria-label="Email">
+            <i class="svg-icon email"></i>
+          </a>
+          {% endif %}
+        </div>
+
+        <p class="footer-copy">
+          &copy; {{ site.time | date: "%Y" }} Griffin Instruments &middot; MIT License
+          {% if site.footer-links.github %}
+          &middot; <a href="https://github.com/{{ site.footer-links.github }}">Open Source</a>
+          {% endif %}
+        </p>
+      </footer>
     </div>
 
     {% include analytics.html %}

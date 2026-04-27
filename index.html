@@ -1,18 +1,120 @@
 ---
 layout: default
+title: Home
 ---
 
-<div class="posts">
-  {% for post in site.posts %}
-    <article class="post">
+<!-- Hero Section -->
+<section class="hero container">
+  <div class="hero-text">
+    <span class="hero-label">Open-Source Neuroscience</span>
 
-      <h1><a href="{{ site.baseurl }}{{ post.url }}">{{ post.title }}</a></h1>
+    <h1>Open Operant<br>Behavioral Chambers</h1>
 
-      <div class="entry">
-        {{ post.excerpt }}
+    <p class="hero-tagline">
+      Professional-grade operant conditioning hardware that any lab can build,
+      modify, and share. Fully open-source, peer-reviewed, MIT licensed.
+    </p>
+
+    <div class="hero-badges">
+      <a href="https://github.com/griffin-instruments" class="badge badge-github" target="_blank" rel="noopener">
+        <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor" aria-hidden="true">
+          <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38
+          0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52
+          -.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2
+          -3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64
+          -.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08
+          2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01
+          1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+        </svg>
+        GitHub
+      </a>
+
+      <span class="badge badge-doi">
+        DOI: 10.xxxx/placeholder
+      </span>
+
+      <span class="badge badge-license">
+        MIT License
+      </span>
+    </div>
+
+    <div class="hero-cta">
+      <a href="{{ site.baseurl }}/hardware" class="btn btn-primary">View Hardware</a>
+      <a href="{{ site.baseurl }}/about" class="btn btn-secondary">Learn More</a>
+    </div>
+  </div>
+
+  <div class="hero-image">
+    <div class="hardware-placeholder">
+      <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5"
+           stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <rect x="8" y="8" width="32" height="32" rx="2"/>
+        <rect x="14" y="14" width="8" height="8" rx="1"/>
+        <rect x="26" y="14" width="8" height="8" rx="1"/>
+        <rect x="14" y="26" width="8" height="8" rx="1"/>
+        <rect x="26" y="26" width="8" height="8" rx="1"/>
+        <line x1="4" y1="18" x2="8" y2="18"/>
+        <line x1="4" y1="30" x2="8" y2="30"/>
+        <line x1="40" y1="18" x2="44" y2="18"/>
+        <line x1="40" y1="30" x2="44" y2="30"/>
+        <line x1="18" y1="4" x2="18" y2="8"/>
+        <line x1="30" y1="4" x2="30" y2="8"/>
+        <line x1="18" y1="40" x2="18" y2="44"/>
+        <line x1="30" y1="40" x2="30" y2="44"/>
+      </svg>
+      <span>Hardware Photo</span>
+    </div>
+  </div>
+</section>
+
+<!-- Feature Cards Section -->
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <h2>Everything You Need to Run Operant Experiments</h2>
+      <p>From raw PCB files to finished firmware — all designed for reproducibility and ease of adoption.</p>
+    </div>
+
+    <div class="feature-grid">
+
+      <div class="feature-card">
+        <div class="card-icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0
+            01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76
+            3.76z"/>
+          </svg>
+        </div>
+        <h3>Open Operant Hardware</h3>
+        <p>Full PCB schematics, BOM, and assembly guides for operant chambers. Designed for standard lab equipment and off-the-shelf components.</p>
+        <a href="{{ site.baseurl }}/hardware" class="card-link">Explore Hardware</a>
       </div>
 
-      <a href="{{ site.baseurl }}{{ post.url }}" class="read-more">Read More</a>
-    </article>
-  {% endfor %}
-</div>
+      <div class="feature-card">
+        <div class="card-icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <polyline points="16 18 22 12 16 6"/>
+            <polyline points="8 6 2 12 8 18"/>
+          </svg>
+        </div>
+        <h3>Software &amp; Firmware</h3>
+        <p>Arduino-compatible firmware, Python API, and experiment paradigm templates. Run experiments with no proprietary software required.</p>
+        <a href="{{ site.baseurl }}/software" class="card-link">View Software</a>
+      </div>
+
+      <div class="feature-card">
+        <div class="card-icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 19.5A2.5 2.5 0 016.5 17H20"/>
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/>
+          </svg>
+        </div>
+        <h3>Publications</h3>
+        <p>Peer-reviewed validation studies, methodology papers, and citation information for labs that use Open Operant in their research.</p>
+        <a href="{{ site.baseurl }}/publications" class="card-link">View Publications</a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
