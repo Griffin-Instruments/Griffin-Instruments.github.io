@@ -45,15 +45,68 @@ title: Home
   </div>
 
   <div class="hero-image">
-    <div class="hero-carousel" role="img"
-         aria-label="The assembled Open Operant behavioral chamber, shown from several angles">
-      <img src="{{ site.baseurl }}/images/chamber-01.jpg" width="1200" height="900" alt="">
-      <img src="{{ site.baseurl }}/images/chamber-02.jpg" width="1200" height="900" alt="">
-      <img src="{{ site.baseurl }}/images/chamber-03.jpg" width="1200" height="900" alt="">
-      <img src="{{ site.baseurl }}/images/chamber-04.jpg" width="1200" height="900" alt="">
-      <img src="{{ site.baseurl }}/images/chamber-05.jpg" width="1200" height="900" alt="">
-      <img src="{{ site.baseurl }}/images/chamber-06.jpg" width="1200" height="900" alt="">
-      <img src="{{ site.baseurl }}/images/chamber-07.jpg" width="1200" height="900" alt="">
+    {%- assign hc_caps = "Open Operant Chamber|Prototype PCB|Pellet Feeder|Nose Poke &amp; Speaker|Reward Port|Slide-out Poop Tray|Slide-out Flooring" | split: "|" -%}
+    {%- assign hc_n = hc_caps | size -%}
+    {%- comment -%}
+      Pure-CSS carousel. State lives in the inputs below; every style rule is an
+      enumerated `#id:checked ~ .hc-stage ...` sibling selector (no :has needed).
+      #hc-auto (checked) = playing; #hc-1..7 = a photo is pinned; #hc-pause = frozen.
+    {%- endcomment -%}
+    <div class="hero-carousel" role="group" aria-roledescription="carousel"
+         aria-label="Open Operant hardware — {{ hc_n }} photos, auto-advancing">
+
+      <input class="hc-state" type="radio" name="hc" id="hc-auto" checked>
+      {%- for cap in hc_caps %}
+      <input class="hc-state" type="radio" name="hc" id="hc-{{ forloop.index }}">
+      {%- endfor %}
+      <input class="hc-state" type="checkbox" id="hc-pause">
+
+      <div class="hc-stage">
+        {%- comment -%} tabindex=-1: all 7 links point at /hardware for now, so
+          keep them out of the tab sequence (the "View Hardware" button already
+          covers that path); revisit when each photo gets its own link. {%- endcomment -%}
+        {%- for cap in hc_caps %}
+        <a class="hc-slide" href="{{ site.baseurl }}/hardware" tabindex="-1">
+          <img src="{{ site.baseurl }}/images/chamber-0{{ forloop.index }}.jpg" width="1200" height="900" alt="">
+          <span class="hc-caption">{{ cap }}</span>
+        </a>
+        {%- endfor %}
+
+        <div class="hc-nav" aria-hidden="true">
+          <span class="hc-nav-set">
+            <label class="hc-arrow hc-prev" for="hc-1"></label>
+            <label class="hc-arrow hc-next" for="hc-2"></label>
+          </span>
+          {%- for cap in hc_caps %}
+          {%- assign i = forloop.index -%}
+          {%- if i == 1 %}{% assign hc_prev = hc_n %}{% else %}{% assign hc_prev = i | minus: 1 %}{% endif -%}
+          {%- if i == hc_n %}{% assign hc_next = 1 %}{% else %}{% assign hc_next = i | plus: 1 %}{% endif -%}
+          <span class="hc-nav-set">
+            <label class="hc-arrow hc-prev" for="hc-{{ hc_prev }}"></label>
+            <label class="hc-arrow hc-next" for="hc-{{ hc_next }}"></label>
+          </span>
+          {%- endfor %}
+        </div>
+
+        <div class="hc-controls">
+          <label class="hc-btn hc-btn--pause" for="hc-pause">
+            <span class="hc-i hc-i--pause" aria-hidden="true">&#10073;&#10073;</span>
+            <span class="hc-i hc-i--play" aria-hidden="true">&#9654;</span>
+            <span class="hc-a11y">Pause slideshow</span>
+          </label>
+          <label class="hc-btn hc-btn--resume" for="hc-auto">
+            <span aria-hidden="true">&#9654;</span>
+            <span class="hc-a11y">Resume slideshow</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="hc-dots">
+        {%- for cap in hc_caps %}
+        <label class="hc-dot" for="hc-{{ forloop.index }}"><span class="hc-a11y">{{ cap }}</span></label>
+        {%- endfor %}
+      </div>
+
     </div>
   </div>
 </section>

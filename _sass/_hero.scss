@@ -174,45 +174,257 @@
   }
 }
 
-// Auto-advancing hero carousel — pure CSS, no JavaScript.
-// 7 slides, 3s each = a 21s loop. Each slide fades in (~0.5s), holds,
-// fades out (~0.5s), then stays hidden until its turn comes round again.
+// ===========================================================================
+// Hero carousel — pure CSS, no JavaScript.
+//
+//   * 7 photos, auto-advancing every 3s on a 21s loop (~0.5s crossfade)
+//   * dots jump to a photo; arrows step through (wrapping); a button pause/plays
+//   * hovering or keyboard-focusing the stage pauses the auto-advance
+//   * every photo is a link (all -> /hardware for now)
+//   * honours prefers-reduced-motion (freezes on the first photo)
+//
+// State lives in the radio/checkbox inputs at the top of .hero-carousel and
+// every rule here is an enumerated `#id:checked ~ .hc-stage ...` sibling
+// selector, so no :has() is required. #hc-auto (checked by default) = playing;
+// #hc-1..#hc-7 = that photo is pinned; #hc-pause = auto-advance frozen.
+// ===========================================================================
+
+$hc-count: 7;
+$hc-step:  3s;
+$hc-loop:  $hc-count * $hc-step;              // 21s
+$hc-chrome: rgba($navy-dark, 0.55);
+
 .hero-carousel {
   position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
   width: 100%;
   max-width: 400px;
+}
+
+// Visually-hidden: keep the state inputs focusable, keep the a11y text readable
+// to screen readers, show neither.
+.hero-carousel .hc-state,
+.hero-carousel .hc-a11y {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+// --- the image viewport --------------------------------------------------
+.hc-stage {
+  position: relative;
+  width: 100%;
   aspect-ratio: 4 / 3;
   background: $light-gray;
   border: 1px solid $color-border;
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.hc-slide {
+  position: absolute;
+  inset: 0;
+  display: block;
+  opacity: 0;
+  pointer-events: none;
+  animation: hc-fade $hc-loop linear infinite;
 
   img {
-    position: absolute;
-    inset: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
+  }
+}
+
+@for $i from 1 through $hc-count {
+  .hc-slide:nth-of-type(#{$i}) { animation-delay: #{($i - 1) * $hc-step}; }
+}
+
+@keyframes hc-fade {
+  0%     { opacity: 0; pointer-events: none; }
+  2.4%   { opacity: 1; pointer-events: auto; }   // faded in  (~0.5s)
+  14.3%  { opacity: 1; pointer-events: auto; }   // held      (to 3.0s)
+  16.7%  { opacity: 0; pointer-events: none; }   // faded out (by 3.5s)
+  100%   { opacity: 0; pointer-events: none; }
+}
+
+// Pause the auto-advance while the pointer or keyboard focus is on the stage.
+.hc-stage:hover .hc-slide,
+.hc-stage:focus-within .hc-slide {
+  animation-play-state: paused;
+}
+
+// --- caption: bottom centre, in the "View Hardware" blue ---------------
+.hc-caption {
+  position: absolute;
+  left: 50%;
+  bottom: 12px;
+  transform: translateX(-50%);
+  max-width: calc(100% - 96px);
+  padding: 5px 12px;
+  background: $steel-blue;
+  color: $white;
+  font-family: $font-body;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  line-height: 1.2;
+  text-align: center;
+  white-space: nowrap;
+  border-radius: 4px;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.3);
+}
+
+// --- manual mode: one photo radio is checked --------------------------
+@for $i from 1 through $hc-count {
+  #hc-#{$i}:checked ~ .hc-stage .hc-slide {
+    animation: none;
     opacity: 0;
-    animation: hero-carousel 21s linear infinite;
   }
-
-  @for $i from 1 through 7 {
-    img:nth-child(#{$i}) { animation-delay: #{($i - 1) * 3}s; }
+  #hc-#{$i}:checked ~ .hc-stage .hc-slide:nth-of-type(#{$i}) {
+    opacity: 1;
+    pointer-events: auto;
   }
 }
 
-@keyframes hero-carousel {
-  0%     { opacity: 0; }
-  2.4%   { opacity: 1; }   // faded in  (~0.5s)
-  14.3%  { opacity: 1; }   // held      (to 3.0s)
-  16.7%  { opacity: 0; }   // faded out (by 3.5s)
-  100%   { opacity: 0; }
+// --- play / pause (the #hc-pause checkbox) ----------------------------
+#hc-pause:checked ~ .hc-stage .hc-slide {
+  animation-play-state: paused;
 }
 
-// Respect a reduced-motion preference: freeze on the first frame.
+// --- overlaid controls ------------------------------------------------
+.hc-controls {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  z-index: 3;
+}
+
+.hc-btn {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: $hc-chrome;
+  color: $white;
+  font-size: 11px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.15s ease;
+
+  &:hover { background: rgba($navy-dark, 0.85); }
+}
+
+.hc-btn--resume { display: none; }   // only shown in manual mode
+.hc-i--play     { display: none; }   // pause button reads "❚❚" until frozen
+
+#hc-pause:checked ~ .hc-stage .hc-btn--pause .hc-i--pause { display: none; }
+#hc-pause:checked ~ .hc-stage .hc-btn--pause .hc-i--play  { display: inline; }
+
+@for $i from 1 through $hc-count {
+  #hc-#{$i}:checked ~ .hc-stage .hc-btn--pause  { display: none; }
+  #hc-#{$i}:checked ~ .hc-stage .hc-btn--resume { display: flex; }
+}
+
+// --- prev / next arrows ---------------------------------------------
+// One <span class="hc-nav-set"> per state, only the active one is displayed.
+// Set 1 is the auto-mode pair; sets 2..8 map to photos 1..7.
+.hc-nav-set { display: none; }
+.hc-nav-set:first-child { display: contents; }
+
+@for $i from 1 through $hc-count {
+  #hc-#{$i}:checked ~ .hc-stage .hc-nav .hc-nav-set:first-child { display: none; }
+  #hc-#{$i}:checked ~ .hc-stage .hc-nav .hc-nav-set:nth-of-type(#{$i + 1}) { display: contents; }
+}
+
+.hc-arrow {
+  position: absolute;
+  top: 50%;
+  width: 32px;
+  height: 32px;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: $hc-chrome;
+  color: $white;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  z-index: 3;
+
+  &:hover { background: rgba($navy-dark, 0.85); }
+}
+.hc-prev { left: 8px; }
+.hc-next { right: 8px; }
+.hc-prev::before { content: "\2039"; }
+.hc-next::before { content: "\203A"; }
+
+// --- dots ---------------------------------------------------------
+.hc-dots {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hc-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: $border-gray;
+  border: 1px solid $mid-gray;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.15s ease;
+
+  &:hover { background: $mid-gray; }
+}
+
+@for $i from 1 through $hc-count {
+  #hc-#{$i}:checked ~ .hc-dots .hc-dot:nth-of-type(#{$i}) {
+    background: $steel-blue;
+    border-color: $steel-blue;
+    transform: scale(1.15);
+  }
+}
+
+// --- keyboard focus rings on the proxied controls ---------------------
+@for $i from 1 through $hc-count {
+  #hc-#{$i}:focus-visible ~ .hc-dots .hc-dot:nth-of-type(#{$i}),
+  #hc-#{$i}:focus-visible ~ .hc-stage .hc-nav .hc-nav-set:nth-of-type(#{$i + 1}) .hc-arrow {
+    outline: 2px solid $steel-blue;
+    outline-offset: 2px;
+  }
+}
+#hc-pause:focus-visible ~ .hc-stage .hc-btn--pause,
+#hc-auto:focus-visible  ~ .hc-stage .hc-btn--resume {
+  outline: 2px solid $white;
+  outline-offset: 2px;
+}
+
+// Tabbing into the (single) radio group lands on #hc-auto — ring the stage so
+// the keyboard user can see the carousel has focus. Arrow keys then step photos.
+#hc-auto:focus-visible ~ .hc-stage {
+  outline: 2px solid $steel-blue;
+  outline-offset: 2px;
+}
+
+// --- reduced motion: no auto-advance, rest on the first photo --------
 @media (prefers-reduced-motion: reduce) {
-  .hero-carousel img { animation: none; }
-  .hero-carousel img:first-child { opacity: 1; }
+  .hc-slide { animation: none; }
+  .hc-slide:first-of-type { opacity: 1; }
+  .hc-controls { display: none; }   // nothing to pause
 }
