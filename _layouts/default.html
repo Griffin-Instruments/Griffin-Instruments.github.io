@@ -9,7 +9,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" type="text/css" href="{{ site.baseurl }}/style.css" />
+    <!-- ?v=<build time> so a browser never pairs new HTML with a stale cached stylesheet -->
+    <link rel="stylesheet" type="text/css" href="{{ site.baseurl }}/style.css?v={{ site.time | date: '%Y%m%d%H%M%S' }}" />
     <link rel="alternate" type="application/rss+xml" title="{{ site.name }}" href="{{ site.baseurl }}/feed.xml" />
   </head>
 
