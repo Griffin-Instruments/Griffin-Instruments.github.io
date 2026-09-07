@@ -8,3 +8,8 @@ Gemfile
 Gemfile.lock
 node_modules
 package.json
+
+# Camera-native photos staged in images/ for conversion are never served
+# (GitHub Pages can't display HEIC). Commit the converted JPEGs instead.
+*.HEIC
+*:Zone.Identifier
